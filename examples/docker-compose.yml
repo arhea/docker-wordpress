@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+
+  wordpress:
+    depends_on:
+      - database
+    build:
+      context: ../docker
+      args:
+        WORDPRESS_VERSION: 5.3.2
+        WORDPRESS_SHA1: fded476f112dbab14e3b5acddd2bcfa550e7b01b
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      WORDPRESS_DB_HOST: database
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: supersecretpassword
+    volumes:
+      - wordpress-uploads:/var/www/html/wp-content/uploads
+
+  database:
+    image: mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: supersecretpassword
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: supersecretpassword
+    volumes:
+      - db-data:/var/lib/mysql
+
+volumes:
+  db-data: {}
+  wordpress-uploads: {}
