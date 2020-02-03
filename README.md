@@ -5,7 +5,7 @@ This repository shows how to run Wordpress on Docker while keeping the PHP code,
 *Note: This repository is meant to be an example and should not be used in production without testing your application against this configuration.*
 
 ## Limitations
-- Wordpress Core, Plugins, and Themes must be updated via the Docker build process
+- Wordpress Core, Plugins, and Themes must be updated via the Docker build process and not in the Wordpress Admin. Doing so will result in containers having different versions of plugins.
 - This assumes all dynamic content is stored int he `wp-content/uploads` folder
 
 ## Getting Started
