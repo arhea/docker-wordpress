@@ -4,11 +4,11 @@ This repository shows how to run Wordpress on Docker while keeping the PHP code,
 
 *Note: This repository is meant to be an example and should not be used in production without testing your application against this configuration.*
 
-### Limitations
+## Limitations
 - Wordpress Core, Plugins, and Themes must be updated via the Docker build process
 - This assumes all dynamic content is stored int he `wp-content/uploads` folder
 
-### Getting Started
+## Getting Started
 
 This repo shows how you can build the container using arbitrary versions of Wordpress. This functionality is defined using `make`. The `IMAGE_NAME`, `IMAGE_TAG`, `WORDPRESS_VERSION`, and `WORDPRESS_SHA1` can be overridden with custom values.
 
@@ -20,11 +20,11 @@ make build
 make WORDPRESS_VERSION=5.2.5 WORDPRESS_SHA1=1afb2e9a10be336773a62a120bb4cfb44214dfcc build
 ```
 
-### Deployment
+## Deployment
 
 This container is designed to be deployed to multiple orchestration systems such as Amazon ECS or Kubernetes. The container has one requirement for storage to mounted at `/var/www/html/wp-content/uploads`. This is so that when users upload images they will be persisted and can be shared across containers. I recommend using a NFS based volume such as Amazon EFS.
 
-#### Kubernetes on Amazon EKS
+### Kubernetes on Amazon EKS
 
 This file shows you how to deploy this container to Amazon EKS. You will need the following controllers installed on your cluster:
 
@@ -39,7 +39,7 @@ kubectl apply -f examples/kubernetes.yml
 
 If you wish to configure a TLS Certificate you can add an annotation to this example. The additional annotations are documented on the [ALB Ingress docs](https://kubernetes-sigs.github.io/aws-alb-ingress-controller/guide/ingress/annotation/).
 
-#### Docker Compose
+### Docker Compose
 
 This file is an exmaple that you can run locally and shows how to deploy Wordpress using Docker Compose. This requires that you have Docker Desktop installed. The container build is defined in the Docker Compose for usability purposes.
 
