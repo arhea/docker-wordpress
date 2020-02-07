@@ -287,4 +287,14 @@ EOPHP
 	done
 fi
 
+PHP_MAX_FILE_SIZE=${PHP_MAX_FILE_SIZE:=20M}
+PHP_MAX_POST_SIZE=${PHP_MAX_POST_SIZE:=21M}
+
+cat > /usr/local/etc/php/conf.d/wordpress.ini <<EOF
+upload_max_filesize = $PHP_MAX_FILE_SIZE
+post_max_size = $PHP_MAX_POST_SIZE
+EOF
+
+chown -R www-data:www-data /var/www/html/wp-content/uploads
+
 exec "$@"

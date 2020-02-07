@@ -31,7 +31,35 @@ This file shows you how to deploy this container to Amazon EKS. You will need th
 - [ALB Ingress Controller](https://docs.aws.amazon.com/eks/latest/userguide/alb-ingress.html) - This will enable the `Ingress` resource to provision a Application Load Balancer
 - [EFS Container Storage Interface Driver](https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html) - This will enable EKS to mount EFS File Systems to the container
 
-Before getting started, deploy a cluster to AWS, provision a RDS database, and create an EFS File System with mount points in each AZ. Then apply the [Kubernetes Manifest](./examples/kubernetes.yml) (I recommend reading through this file):
+Before getting started, deploy a cluster to AWS, provision a RDS database, and create an EFS File System with mount points in each AZ.
+
+Next, go to the `examples/kubernetes.yml` file and update the `PersistentVolume` configuration with the ID of the EFS File System you created.
+
+Next create a secret for all of the Wordpress Salts (These can be [genereated here](https://api.wordpress.org/secret-key/1.1/salt/)). These will enable all instances of our pods to encrypt and decrypt the session.
+
+```bash
+kubectl create secret generic wordpress-salts \
+    --from-literal=auth_key="" \
+    --from-literal=secure_auth_key="" \
+    --from-literal=logged_in_key="" \
+    --from-literal=nonce_key="" \
+    --from-literal=auth_salt="" \
+    --from-literal=secure_auth_salt="" \
+    --from-literal=logged_in_salt="" \
+    --from-literal=nonce_salt="
+```
+
+Then we need to create another secret for our Wordpress Database configuration.
+
+```bash
+kubectl create secret generic wordpress-db \
+  --from-literal=host="" \
+  --from-literal=name="" \
+  --from-literal=username="" \
+  --from-literal=password=""
+```
+
+Then finally,
 
 ```bash
 kubectl apply -f examples/kubernetes.yml

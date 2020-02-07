@@ -31,11 +31,10 @@ kind: Ingress
 metadata:
   name: wordpress-ingress
   annotations:
-    # see https://kubernetes-sigs.github.io/aws-alb-ingress-controller/guide/ingress/annotation/ for additional annotations
-    kubernetes.io/ingress.class: alb
-    alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/healthcheck-path: /index.php
-    alb.ingress.kubernetes.io/success-codes: 200,201,302
+    kubernetes.io/ingress.class: "alb"
+    alb.ingress.kubernetes.io/scheme: "internet-facing"
+    alb.ingress.kubernetes.io/healthcheck-path: "/index.php"
+    alb.ingress.kubernetes.io/success-codes: "200,201,302"
   labels:
     app: wordpress-ingress
 spec:
@@ -64,24 +63,96 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: wordpress-deployment
-  spec:
-    containers:
-      - image: wordpress:5.3-apache
-        name: wordpress
-        env:
-          - name: WORDPRESS_DB_HOST
-            value: wordpress-db.cluster-123456789.us-east-1.rds.amazonaws.com # URL to your RDS instance
-          - name: WORDPRESS_DB_NAME
-            value: wordpress
-          - name: WORDPRESS_DB_USER
-            value: admin
-          - name: WORDPRESS_DB_PASSWORD
-            value: supersecretpassword # I recommend saving these in kubernetes secrets
-        ports:
-        - containerPort: 80
-        volumeMounts:
-          - name: wordpress-persistent-storage
-            mountPath: /var/www/html/wp-content/uploads
+  labels:
+    app: wordpress
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: wordpress
+  template:
+    metadata:
+      labels:
+        app: wordpress
+    spec:
+      containers:
+        - image: wordpress:5.3-apache
+          name: wordpress
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 250m
+            limits:
+              memory: 512Mi
+              cpu: 500m
+          env:
+            - name: PHP_MAX_POST_SIZE
+              value: 1024M
+            - name: WORDPRESS_DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: wordpress-db
+                  key: host
+            - name: WORDPRESS_DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: wordpress-db
+                  key: name
+            - name: WORDPRESS_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: wordpress-db
+                  key: username
+            - name: WORDPRESS_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: wordpress-db
+                  key: password
+            - name: WORDPRESS_AUTH_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: wordpress-salts
+                  key: auth_key
+            - name: WORDPRESS_SECURE_AUTH_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: wordpress-salts
+                  key: secure_auth_key
+            - name: WORDPRESS_LOGGED_IN_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: wordpress-salts
+                  key: logged_in_key
+            - name: WORDPRESS_NONCE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: wordpress-salts
+                  key: nonce_key
+            - name: WORDPRESS_AUTH_SALT
+              valueFrom:
+                secretKeyRef:
+                  name: wordpress-salts
+                  key: auth_salt
+            - name: WORDPRESS_SECURE_AUTH_SALT
+              valueFrom:
+                secretKeyRef:
+                  name: wordpress-salts
+                  key: secure_auth_salt
+            - name: WORDPRESS_LOGGED_IN_SALT
+              valueFrom:
+                secretKeyRef:
+                  name: wordpress-salts
+                  key: logged_in_salt
+            - name: WORDPRESS_NONCE_SALT
+              valueFrom:
+                secretKeyRef:
+                  name: wordpress-salts
+                  key: nonce_salt
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: wordpress-efs-uploads
+              mountPath: "/var/www/html/wp-content/uploads"
       volumes:
         - name: wordpress-efs-uploads
           persistentVolumeClaim:

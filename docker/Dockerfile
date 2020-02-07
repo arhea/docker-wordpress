@@ -112,6 +112,8 @@ COPY docker-entrypoint.sh /usr/local/bin/
 COPY ./wp-content/plugins /var/www/html/wp-content/plugins
 COPY ./wp-content/themes /var/www/html/wp-content/themes
 
+RUN chown -R www-data:www-data /var/www/html/wp-content
+
 VOLUME /var/www/html/wp-content/uploads
 
 ENTRYPOINT ["docker-entrypoint.sh"]
