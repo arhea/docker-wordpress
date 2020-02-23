@@ -45,6 +45,13 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
 		group="$(id -g)"
 	fi
 
+	if [ ! -d /wordpress ]; then
+		echo "Please mount a directory at /wordpress where unscrambled wordpress can be saved. "
+		echo "You may mount an empty directory and it will be auto-populated with WordPress."
+		exit 1
+	fi
+	cd /wordpress
+
 	if [ ! -e index.php ] && [ ! -e wp-includes/version.php ]; then
 		# if the directory exists and WordPress doesn't appear to be installed AND the permissions of it are root:root, let's chown it (likely a Docker-created directory)
 		if [ "$(id -u)" = '0' ] && [ "$(stat -c '%u:%g' .)" = '0:0' ]; then
@@ -58,6 +65,7 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
 		sourceTarArgs=(
 			--create
 			--file -
+			--one-file-system
 			--directory /usr/src/wordpress
 			--owner "$user" --group "$group"
 		)
@@ -285,7 +293,14 @@ EOPHP
 	for e in "${envs[@]}"; do
 		unset "$e"
 	done
+
+	if [ -e /usr/local/bin/scramble.sh ]; then
+		echo "Scrambler script found. Calling it..."
+		/usr/local/bin/scramble.sh
+	fi
 fi
+
+chown -R www-data:www-data /var/www/html/wp-content/uploads
 
 PHP_MAX_FILE_SIZE=${PHP_MAX_FILE_SIZE:=20M}
 PHP_MAX_POST_SIZE=${PHP_MAX_POST_SIZE:=21M}
@@ -295,6 +310,8 @@ upload_max_filesize = $PHP_MAX_FILE_SIZE
 post_max_size = $PHP_MAX_POST_SIZE
 EOF
 
-chown -R www-data:www-data /var/www/html/wp-content/uploads
+if [ -f "/usr/local/bin/s_php" ]; then
+    rm -rf /usr/local/bin/s_php
+fi
 
 exec "$@"

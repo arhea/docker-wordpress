@@ -1,4 +1,4 @@
-FROM polyverse/ps-php7.4-apache:29a4ecd4cb9588beca88dd8f381bdc39455d6b0a
+FROM polyverse/ps-php7.4-apache:6c4adc6c1eb9d4570b3d424afef257b923850a4d
 
 # persistent dependencies
 RUN set -eux; \
