@@ -95,26 +95,25 @@ RUN set -eux; \
 ARG WORDPRESS_VERSION=5.3.2
 ARG WORDPRESS_SHA1=fded476f112dbab14e3b5acddd2bcfa550e7b01b
 
+# Initialize wordpress at /wordpress for staging
+# The scrambler script will either copy it as-is
+# to the /var/www/html directory, or copy it post-scrambling
+# so that it is transformed to run with the Polyscripted PHP
 RUN set -ex; \
 	curl -o wordpress.tar.gz -fSL "https://wordpress.org/wordpress-${WORDPRESS_VERSION}.tar.gz"; \
 	echo "$WORDPRESS_SHA1 *wordpress.tar.gz" | sha1sum -c -; \
-# upstream tarballs include ./wordpress/ so this gives us /usr/src/wordpress
-	tar -xzf wordpress.tar.gz -C /usr/src/; \
-    cp -r /usr/src/wordpress/* /var/www/html/; \
-	rm wordpress.tar.gz; \
-    rm -rf /usr/src; \
-	chown -R www-data:www-data /var/www/html; \
-	rm -rf /var/www/html/wp-content/plugins; \
-	rm -rf /var/www/html/wp-content/themes;
+# upstream tarballs include ./wordpress/ so this gives us /wordpress
+	tar -xzf wordpress.tar.gz -C /; \
+	rm -rf /wordpress/wp-content/plugins; \
+	rm -rf /wordpress/wp-content/themes;
+
+COPY ./wp-content/plugins /wordpress/wp-content/plugins
+COPY ./wp-content/themes /wordpress/wp-content/themes
+
+VOLUME /uploads
 
 COPY docker-entrypoint.sh /usr/local/bin/
-
-COPY ./wp-content/plugins /var/www/html/wp-content/plugins
-COPY ./wp-content/themes /var/www/html/wp-content/themes
-
-RUN chown -R www-data:www-data /var/www/html/wp-content
-
-VOLUME /var/www/html/wp-content/uploads
+COPY scramble.sh /usr/local/bin/
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["apache2-foreground"]

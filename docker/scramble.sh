@@ -1,6 +1,9 @@
 #!/bin/bash
 
 rm -rf /var/www/html
+ls -trla /var/www/html
+echo "Contents of /var/www"
+ls -trla /var/www
 
 if [[ "$MODE" == "polyscripted" || -f /polyscripted ]]; then
 
@@ -24,10 +27,11 @@ if [[ "$MODE" == "polyscripted" || -f /polyscripted ]]; then
 		cp /usr/local/bin/s_php /usr/local/bin/php
 		exit 1
 	fi
-	if [ -d /uploads ]; then
+
+        rm  -rf /var/www/html/wp-content/uploads
+	if [[ -d /uploads ]]; then
 		ln -s /uploads /var/www/html/wp-content/uploads
-	else 	
-		rm  -rf /var/www/html/wp-content/uploads
+	else
 		ln -s /wordpress/wp-content/uploads /var/www/html/wp-content/uploads
 	fi
 else
