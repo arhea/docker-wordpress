@@ -1,9 +1,9 @@
 #!/bin/bash
 
-rm -rf /var/www/html
-ls -trla /var/www/html
-echo "Contents of /var/www"
-ls -trla /var/www
+if [[ -d /var/www/html ]]; then
+	echo "Remvoing /var/www/html to mount it from /wordpress where files are stored"
+	rm -rf /var/www/html
+fi
 
 if [[ "$MODE" == "polyscripted" || -f /polyscripted ]]; then
 
@@ -27,13 +27,6 @@ if [[ "$MODE" == "polyscripted" || -f /polyscripted ]]; then
 		cp /usr/local/bin/s_php /usr/local/bin/php
 		exit 1
 	fi
-
-        rm  -rf /var/www/html/wp-content/uploads
-	if [[ -d /uploads ]]; then
-		ln -s /uploads /var/www/html/wp-content/uploads
-	else
-		ln -s /wordpress/wp-content/uploads /var/www/html/wp-content/uploads
-	fi
 else
     echo "Polyscripted mode is off. To enable it, either:"
     echo "  1. Set the environment variable: MODE=polyscripted"
@@ -43,3 +36,8 @@ else
     ln -s /wordpress /var/www/html
 fi
 
+rm  -rf /var/www/html/wp-content/uploads
+if [[ ! -d /uploads ]]; then
+	mkdir /uploads
+fi
+ln -s /uploads /var/www/html/wp-content/uploads

@@ -1,4 +1,4 @@
-FROM polyverse/ps-php7.4-apache:6c4adc6c1eb9d4570b3d424afef257b923850a4d
+FROM polyverse/ps-php7.4-apache:97908964ff927880dcb526f5e355bcac71fa45de
 
 # persistent dependencies
 RUN set -eux; \
@@ -95,6 +95,9 @@ RUN set -eux; \
 ARG WORDPRESS_VERSION=5.3.2
 ARG WORDPRESS_SHA1=fded476f112dbab14e3b5acddd2bcfa550e7b01b
 
+VOLUME /uploads
+VOLUME /wordpress
+
 # Initialize wordpress at /wordpress for staging
 # The scrambler script will either copy it as-is
 # to the /var/www/html directory, or copy it post-scrambling
@@ -110,7 +113,6 @@ RUN set -ex; \
 COPY ./wp-content/plugins /wordpress/wp-content/plugins
 COPY ./wp-content/themes /wordpress/wp-content/themes
 
-VOLUME /uploads
 
 COPY docker-entrypoint.sh /usr/local/bin/
 COPY scramble.sh /usr/local/bin/
