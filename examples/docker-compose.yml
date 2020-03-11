@@ -18,8 +18,10 @@ services:
       WORDPRESS_DB_NAME: wordpress
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_PASSWORD: supersecretpassword
+      MODE: ${MODE}
     volumes:
-      - wordpress-uploads:/var/www/html/wp-content/uploads
+      - wordpress-uploads:/uploads
+      - wordpress:/wordpress
 
   database:
     image: mariadb
@@ -35,3 +37,4 @@ services:
 volumes:
   db-data: {}
   wordpress-uploads: {}
+  wordpress: {}
