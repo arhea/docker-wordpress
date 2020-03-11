@@ -1,4 +1,8 @@
-FROM polyverse/ps-php7.4-apache:15deefdb40a1a73943eec9d2c6442cf4cdf67cf6
+# FROM php:7.4-apache
+
+# Start with a polyscripting-capable php7.4-apache container
+# Source: https://github.com/polyverse/php/blob/master/7.4/buster/apache/Dockerfile
+FROM polyverse/ps-php7.4-apache:8da9a6be4ddc1e4d718b0e4238da3cd1f348f283
 
 # persistent dependencies
 RUN set -eux; \
