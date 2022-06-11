@@ -1,3 +1,15 @@
+# DEPRECATION NOTICE
+
+Please note that this repository has been deprecated and is no longer actively maintained by Polyverse Corporation.  It may be removed in the future, but for now remains public for the benefit of any users.
+
+Importantly, as the repository has not been maintained, it may contain unpatched security issues and other critical issues.  Use at your own risk.
+
+While it is not maintained, we would graciously consider any pull requests in accordance with our Individual Contributor License Agreement.  https://github.com/polyverse/contributor-license-agreement
+
+For any other issues, please feel free to contact info@polyverse.com
+
+---
+
 # Wordpress on Docker
 
 This repository shows how to run Wordpress on Docker while keeping the PHP code, plugins, and themes within source control. This has advantages to running Wordpress out of a shared file system. This enables Wordpress, Custom Code, and the PHP configuration to be tested a single unit prior deploying to production. This does have limitations which is documented below.
